@@ -5,6 +5,7 @@ import (
 	"flag"
 	"net/http"
 	"os"
+	"strings"
 
 	v1 "user-center/api/user/v1"
 	"user-center/internal/biz"
@@ -30,6 +31,31 @@ func newApp(logger log.Logger, gs *grpc.Server) *kratos.App {
 		kratos.Logger(logger),
 		kratos.Server(gs),
 	)
+}
+
+func authMiddleware(authUC *biz.AuthUseCase, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "unauthorized", 401)
+			return
+		}
+
+		parts := strings.SplitN(authHeader, " ", 2)
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			http.Error(w, "unauthorized", 401)
+			return
+		}
+
+		userID, err := authUC.ValidateToken(parts[1])
+		if err != nil {
+			http.Error(w, "unauthorized", 401)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "user_id", userID)
+		next(w, r.WithContext(ctx))
+	}
 }
 
 func main() {
@@ -82,10 +108,10 @@ func main() {
 		httpMux := http.NewServeMux()
 		httpMux.HandleFunc("/api/v1/register", userHandler.Register)
 		httpMux.HandleFunc("/api/v1/login", userHandler.Login)
-		httpMux.HandleFunc("/api/v1/userinfo", userHandler.GetUserInfo)
-		httpMux.HandleFunc("/api/v1/account/delete", userHandler.DeleteAccount)
+		httpMux.HandleFunc("/api/v1/userinfo", authMiddleware(authUC, userHandler.GetUserInfo))
+		httpMux.HandleFunc("/api/v1/account/delete", authMiddleware(authUC, userHandler.DeleteAccount))
 		httpMux.HandleFunc("/api/v1/account", userHandler.DeleteAccount)
-		httpMux.HandleFunc("/api/v1/password/change", userHandler.ChangePassword)
+		httpMux.HandleFunc("/api/v1/password/change", authMiddleware(authUC, userHandler.ChangePassword))
 		httpMux.HandleFunc("/api/v1/verifycode/send", userHandler.SendVerifyCode)
 
 		http.ListenAndServe(":8000", httpMux)
