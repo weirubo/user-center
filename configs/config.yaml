@@ -1,0 +1,28 @@
+server:
+  http:
+    network: tcp
+    addr: 0.0.0.0:8000
+    timeout: 10000
+  grpc:
+    network: tcp
+    addr: 0.0.0.0:9000
+    timeout: 10000
+
+database:
+  source: root:123456@tcp(127.0.0.1:3306)/user_center?charset=utf8mb4&parseTime=True&loc=Local
+
+redis:
+  addr: localhost:6379
+  password: ""
+  db: 0
+
+auth:
+  jwt_secret: your-secret-key-change-in-production
+  expire_time: 604800
+
+smtp:
+  host: smtp.example.com
+  port: 587
+  username: noreply@example.com
+  password: your-smtp-password
+  from: noreply@example.com

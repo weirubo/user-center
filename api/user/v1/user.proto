@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+option go_package = "user-center/api/user/v1;v1";
+
+import "google/api/annotations.proto";
+
+service User {
+  rpc Register (RegisterRequest) returns (RegisterReply) {
+    option (google.api.http) = {
+      post: "/api/v1/register"
+      body: "*"
+    };
+  }
+  rpc Login (LoginRequest) returns (LoginReply) {
+    option (google.api.http) = {
+      post: "/api/v1/login"
+      body: "*"
+    };
+  }
+  rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoReply) {
+    option (google.api.http) = {
+      get: "/api/v1/userinfo"
+    };
+  }
+  rpc DeleteAccount (DeleteAccountRequest) returns (DeleteAccountReply) {
+    option (google.api.http) = {
+      post: "/api/v1/account/delete"
+      body: "*"
+    };
+  }
+  rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordReply) {
+    option (google.api.http) = {
+      post: "/api/v1/password/change"
+      body: "*"
+    };
+  }
+  rpc SendVerifyCode (SendVerifyCodeRequest) returns (SendVerifyCodeReply) {
+    option (google.api.http) = {
+      post: "/api/v1/verifycode/send"
+      body: "*"
+    };
+  }
+  rpc RegisterWithCode (RegisterWithCodeRequest) returns (RegisterWithCodeReply) {
+    option (google.api.http) = {
+      post: "/api/v1/register/code"
+      body: "*"
+    };
+  }
+  rpc LoginWithCode (LoginWithCodeRequest) returns (LoginWithCodeReply) {
+    option (google.api.http) = {
+      post: "/api/v1/login/code"
+      body: "*"
+    };
+  }
+}
+
+message RegisterRequest {
+  string email = 1;
+  string phone = 2;
+  string password = 3;
+  string nickname = 4;
+}
+
+message RegisterReply {
+  int64 id = 1;
+  string message = 2;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginReply {
+  string token = 1;
+  int64 id = 2;
+  string nickname = 3;
+}
+
+message GetUserInfoRequest {}
+
+message GetUserInfoReply {
+  int64 id = 1;
+  string email = 2;
+  string phone = 3;
+  string nickname = 4;
+}
+
+message DeleteAccountRequest {}
+
+message DeleteAccountReply {
+  string message = 1;
+}
+
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+}
+
+message ChangePasswordReply {
+  string message = 1;
+}
+
+message SendVerifyCodeRequest {
+  string email = 1;
+}
+
+message SendVerifyCodeReply {
+  string message = 1;
+}
+
+message RegisterWithCodeRequest {
+  string email = 1;
+  string password = 2;
+  string code = 3;
+  string nickname = 4;
+}
+
+message RegisterWithCodeReply {
+  int64 id = 1;
+  string message = 2;
+}
+
+message LoginWithCodeRequest {
+  string email = 1;
+  string code = 2;
+}
+
+message LoginWithCodeReply {
+  string token = 1;
+  int64 id = 2;
+  string nickname = 3;
+}

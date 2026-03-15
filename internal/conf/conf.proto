@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package user.center;
+
+option go_package = "user-center/internal/conf;conf";
+
+message Database {
+  string source = 1;
+}
+
+message Redis {
+  string addr = 1;
+  string password = 2;
+  int32 db = 3;
+}
+
+message Auth {
+  string jwt_secret = 1;
+  int64 expire_time = 2;
+}
+
+message SMTP {
+  string host = 1;
+  int32 port = 2;
+  string username = 3;
+  string password = 4;
+  string from = 5;
+}
+
+message Server {
+  string jwt_secret = 1;
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    int64 timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    int64 timeout = 3;
+  }
+  HTTP http = 2;
+  GRPC grpc = 3;
+}
+
+message Config {
+  Server server = 1;
+  Database database = 2;
+  Redis redis = 3;
+  Auth auth = 4;
+  SMTP smtp = 5;
+}
