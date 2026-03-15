@@ -57,8 +57,19 @@ func NewAuthUseCase(repo UserRepo, jwtSecret string, expireTime int64, smtpCfg *
 	}
 }
 
-func (uc *AuthUseCase) Register(ctx context.Context, email, phone, password, nickname string) (*User, error) {
-	// Check if user exists by email
+func (uc *AuthUseCase) Register(ctx context.Context, email, phone, password, nickname, code string) (*User, error) {
+	if code != "" {
+		key := fmt.Sprintf("verify_code:%s", email)
+		storedCode, err := uc.repo.GetCache(ctx, key)
+		if err != nil {
+			return nil, ErrCodeExpired
+		}
+		if storedCode != code {
+			return nil, ErrInvalidCode
+		}
+		uc.repo.DeleteCache(ctx, key)
+	}
+
 	existingUser, err := uc.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -67,17 +78,18 @@ func (uc *AuthUseCase) Register(ctx context.Context, email, phone, password, nic
 		return nil, ErrUserAlreadyExists
 	}
 
-	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
+	if code == "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		password = string(hashedPassword)
 	}
 
-	// Create user
 	user := &User{
 		Email:    email,
 		Phone:    phone,
-		Password: string(hashedPassword),
+		Password: password,
 		Nickname: nickname,
 	}
 
@@ -88,7 +100,34 @@ func (uc *AuthUseCase) Register(ctx context.Context, email, phone, password, nic
 	return user, nil
 }
 
-func (uc *AuthUseCase) Login(ctx context.Context, email, password string) (string, *User, error) {
+func (uc *AuthUseCase) Login(ctx context.Context, email, password, code string) (string, *User, error) {
+	if code != "" {
+		key := fmt.Sprintf("verify_code:%s", email)
+		storedCode, err := uc.repo.GetCache(ctx, key)
+		if err != nil {
+			return "", nil, ErrCodeExpired
+		}
+		if storedCode != code {
+			return "", nil, ErrInvalidCode
+		}
+		uc.repo.DeleteCache(ctx, key)
+
+		user, err := uc.repo.GetUserByEmail(ctx, email)
+		if err != nil {
+			return "", nil, err
+		}
+		if user == nil {
+			return "", nil, ErrUserNotFound
+		}
+
+		token, err := uc.generateToken(user.ID)
+		if err != nil {
+			return "", nil, err
+		}
+
+		return token, user, nil
+	}
+
 	user, err := uc.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return "", nil, err
@@ -97,32 +136,26 @@ func (uc *AuthUseCase) Login(ctx context.Context, email, password string) (strin
 		return "", nil, ErrUserNotFound
 	}
 
-	// Check if account is locked
 	if user.LockedUntil != nil && user.LockedUntil.After(time.Now()) {
 		return "", nil, ErrAccountLocked
 	}
 
-	// Check password with bcrypt
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		// Increment password error count
 		user.PasswordErrors++
 		if user.PasswordErrors >= MaxPasswordErrors {
 			lockedUntil := time.Now().Add(LockDuration)
 			user.LockedUntil = &lockedUntil
 		}
-		// Update user in database
 		uc.repo.UpdateUser(ctx, user)
 		return "", nil, ErrInvalidPassword
 	}
 
-	// Password correct, reset error count
 	if user.PasswordErrors > 0 || user.LockedUntil != nil {
 		user.PasswordErrors = 0
 		user.LockedUntil = nil
 		uc.repo.UpdateUser(ctx, user)
 	}
 
-	// Generate JWT token
 	token, err := uc.generateToken(user.ID)
 	if err != nil {
 		return "", nil, err
@@ -228,47 +261,4 @@ func (uc *AuthUseCase) SendVerifyCode(ctx context.Context, emailAddr string) (st
 	}
 
 	return code, nil
-}
-
-func (uc *AuthUseCase) RegisterWithCode(ctx context.Context, email, password, code, nickname string) (*User, error) {
-	key := fmt.Sprintf("verify_code:%s", email)
-	storedCode, err := uc.repo.GetCache(ctx, key)
-	if err != nil {
-		return nil, ErrCodeExpired
-	}
-	if storedCode != code {
-		return nil, ErrInvalidCode
-	}
-
-	uc.repo.DeleteCache(ctx, key)
-
-	return uc.Register(ctx, email, "", password, nickname)
-}
-
-func (uc *AuthUseCase) LoginWithCode(ctx context.Context, email, code string) (string, *User, error) {
-	key := fmt.Sprintf("verify_code:%s", email)
-	storedCode, err := uc.repo.GetCache(ctx, key)
-	if err != nil {
-		return "", nil, ErrCodeExpired
-	}
-	if storedCode != code {
-		return "", nil, ErrInvalidCode
-	}
-
-	uc.repo.DeleteCache(ctx, key)
-
-	user, err := uc.repo.GetUserByEmail(ctx, email)
-	if err != nil {
-		return "", nil, err
-	}
-	if user == nil {
-		return "", nil, ErrUserNotFound
-	}
-
-	token, err := uc.generateToken(user.ID)
-	if err != nil {
-		return "", nil, err
-	}
-
-	return token, user, nil
 }

@@ -15,7 +15,7 @@ var ErrUserNotFound = &biz.AuthError{Message: "user not found"}
 
 type UserService struct {
 	v1.UnimplementedUserServer
-	
+
 	authUC *biz.AuthUseCase
 }
 
@@ -30,7 +30,7 @@ func (s *UserService) getUserIDFromContext(ctx context.Context) (int64, error) {
 	if userID, ok := ctx.Value("user_id").(int64); ok {
 		return userID, nil
 	}
-	
+
 	// Try to get from gRPC metadata
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
@@ -45,12 +45,16 @@ func (s *UserService) getUserIDFromContext(ctx context.Context) (int64, error) {
 			}
 		}
 	}
-	
+
 	return 0, ErrUnauthorized
 }
 
 func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v1.RegisterReply, error) {
-	user, err := s.authUC.Register(ctx, req.Email, req.Phone, req.Password, req.Nickname)
+	var code string
+	if req.Code != nil {
+		code = *req.Code
+	}
+	user, err := s.authUC.Register(ctx, req.Email, req.Phone, req.Password, req.Nickname, code)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +65,11 @@ func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v
 }
 
 func (s *UserService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginReply, error) {
-	token, user, err := s.authUC.Login(ctx, req.Email, req.Password)
+	var code string
+	if req.Code != nil {
+		code = *req.Code
+	}
+	token, user, err := s.authUC.Login(ctx, req.Email, req.Password, code)
 	if err != nil {
 		return nil, err
 	}

@@ -87,8 +87,6 @@ func main() {
 		httpMux.HandleFunc("/api/v1/account", userHandler.DeleteAccount)
 		httpMux.HandleFunc("/api/v1/password/change", userHandler.ChangePassword)
 		httpMux.HandleFunc("/api/v1/verifycode/send", userHandler.SendVerifyCode)
-		httpMux.HandleFunc("/api/v1/register/code", userHandler.RegisterWithCode)
-		httpMux.HandleFunc("/api/v1/login/code", userHandler.LoginWithCode)
 
 		http.ListenAndServe(":8000", httpMux)
 	}()

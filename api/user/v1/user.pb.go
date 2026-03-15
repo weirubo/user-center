@@ -28,6 +28,7 @@ type RegisterRequest struct {
 	Phone         string                 `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	Nickname      string                 `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Code          *string                `protobuf:"bytes,5,opt,name=code,proto3,oneof" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -90,6 +91,13 @@ func (x *RegisterRequest) GetNickname() string {
 	return ""
 }
 
+func (x *RegisterRequest) GetCode() string {
+	if x != nil && x.Code != nil {
+		return *x.Code
+	}
+	return ""
+}
+
 type RegisterReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -146,6 +154,7 @@ type LoginRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -190,6 +199,13 @@ func (x *LoginRequest) GetEmail() string {
 func (x *LoginRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetCode() string {
+	if x != nil && x.Code != nil {
+		return *x.Code
 	}
 	return ""
 }
@@ -622,254 +638,26 @@ func (x *SendVerifyCodeReply) GetMessage() string {
 	return ""
 }
 
-type RegisterWithCodeRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	Code          string                 `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
-	Nickname      string                 `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RegisterWithCodeRequest) Reset() {
-	*x = RegisterWithCodeRequest{}
-	mi := &file_api_user_v1_user_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RegisterWithCodeRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterWithCodeRequest) ProtoMessage() {}
-
-func (x *RegisterWithCodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_user_v1_user_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterWithCodeRequest.ProtoReflect.Descriptor instead.
-func (*RegisterWithCodeRequest) Descriptor() ([]byte, []int) {
-	return file_api_user_v1_user_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *RegisterWithCodeRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *RegisterWithCodeRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
-func (x *RegisterWithCodeRequest) GetCode() string {
-	if x != nil {
-		return x.Code
-	}
-	return ""
-}
-
-func (x *RegisterWithCodeRequest) GetNickname() string {
-	if x != nil {
-		return x.Nickname
-	}
-	return ""
-}
-
-type RegisterWithCodeReply struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RegisterWithCodeReply) Reset() {
-	*x = RegisterWithCodeReply{}
-	mi := &file_api_user_v1_user_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RegisterWithCodeReply) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterWithCodeReply) ProtoMessage() {}
-
-func (x *RegisterWithCodeReply) ProtoReflect() protoreflect.Message {
-	mi := &file_api_user_v1_user_proto_msgTypes[13]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterWithCodeReply.ProtoReflect.Descriptor instead.
-func (*RegisterWithCodeReply) Descriptor() ([]byte, []int) {
-	return file_api_user_v1_user_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *RegisterWithCodeReply) GetId() int64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *RegisterWithCodeReply) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
-type LoginWithCodeRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LoginWithCodeRequest) Reset() {
-	*x = LoginWithCodeRequest{}
-	mi := &file_api_user_v1_user_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LoginWithCodeRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LoginWithCodeRequest) ProtoMessage() {}
-
-func (x *LoginWithCodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_user_v1_user_proto_msgTypes[14]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LoginWithCodeRequest.ProtoReflect.Descriptor instead.
-func (*LoginWithCodeRequest) Descriptor() ([]byte, []int) {
-	return file_api_user_v1_user_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *LoginWithCodeRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *LoginWithCodeRequest) GetCode() string {
-	if x != nil {
-		return x.Code
-	}
-	return ""
-}
-
-type LoginWithCodeReply struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Id            int64                  `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-	Nickname      string                 `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LoginWithCodeReply) Reset() {
-	*x = LoginWithCodeReply{}
-	mi := &file_api_user_v1_user_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LoginWithCodeReply) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LoginWithCodeReply) ProtoMessage() {}
-
-func (x *LoginWithCodeReply) ProtoReflect() protoreflect.Message {
-	mi := &file_api_user_v1_user_proto_msgTypes[15]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LoginWithCodeReply.ProtoReflect.Descriptor instead.
-func (*LoginWithCodeReply) Descriptor() ([]byte, []int) {
-	return file_api_user_v1_user_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *LoginWithCodeReply) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
-}
-
-func (x *LoginWithCodeReply) GetId() int64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *LoginWithCodeReply) GetNickname() string {
-	if x != nil {
-		return x.Nickname
-	}
-	return ""
-}
-
 var File_api_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_api_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/user/v1/user.proto\x12\vapi.user.v1\x1a\x1cgoogle/api/annotations.proto\"u\n" +
+	"\x16api/user/v1/user.proto\x12\vapi.user.v1\x1a\x1cgoogle/api/annotations.proto\"\x97\x01\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x14\n" +
 	"\x05phone\x18\x02 \x01(\tR\x05phone\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12\x1a\n" +
-	"\bnickname\x18\x04 \x01(\tR\bnickname\"9\n" +
+	"\bnickname\x18\x04 \x01(\tR\bnickname\x12\x17\n" +
+	"\x04code\x18\x05 \x01(\tH\x00R\x04code\x88\x01\x01B\a\n" +
+	"\x05_code\"9\n" +
 	"\rRegisterReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"@\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"b\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"N\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x17\n" +
+	"\x04code\x18\x03 \x01(\tH\x00R\x04code\x88\x01\x01B\a\n" +
+	"\x05_code\"N\n" +
 	"\n" +
 	"LoginReply\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x0e\n" +
@@ -892,31 +680,14 @@ const file_api_user_v1_user_proto_rawDesc = "" +
 	"\x15SendVerifyCodeRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"/\n" +
 	"\x13SendVerifyCodeReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"{\n" +
-	"\x17RegisterWithCodeRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
-	"\x04code\x18\x03 \x01(\tR\x04code\x12\x1a\n" +
-	"\bnickname\x18\x04 \x01(\tR\bnickname\"A\n" +
-	"\x15RegisterWithCodeReply\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"@\n" +
-	"\x14LoginWithCodeRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\x12\x12\n" +
-	"\x04code\x18\x02 \x01(\tR\x04code\"V\n" +
-	"\x12LoginWithCodeReply\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12\x0e\n" +
-	"\x02id\x18\x02 \x01(\x03R\x02id\x12\x1a\n" +
-	"\bnickname\x18\x03 \x01(\tR\bnickname2\x8d\a\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\x99\x05\n" +
 	"\x04User\x12a\n" +
 	"\bRegister\x12\x1c.api.user.v1.RegisterRequest\x1a\x1a.api.user.v1.RegisterReply\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/v1/register\x12U\n" +
 	"\x05Login\x12\x19.api.user.v1.LoginRequest\x1a\x17.api.user.v1.LoginReply\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/v1/login\x12g\n" +
 	"\vGetUserInfo\x12\x1f.api.user.v1.GetUserInfoRequest\x1a\x1d.api.user.v1.GetUserInfoReply\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/v1/userinfo\x12v\n" +
 	"\rDeleteAccount\x12!.api.user.v1.DeleteAccountRequest\x1a\x1f.api.user.v1.DeleteAccountReply\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/api/v1/account/delete\x12z\n" +
 	"\x0eChangePassword\x12\".api.user.v1.ChangePasswordRequest\x1a .api.user.v1.ChangePasswordReply\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/password/change\x12z\n" +
-	"\x0eSendVerifyCode\x12\".api.user.v1.SendVerifyCodeRequest\x1a .api.user.v1.SendVerifyCodeReply\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/verifycode/send\x12~\n" +
-	"\x10RegisterWithCode\x12$.api.user.v1.RegisterWithCodeRequest\x1a\".api.user.v1.RegisterWithCodeReply\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/register/code\x12r\n" +
-	"\rLoginWithCode\x12!.api.user.v1.LoginWithCodeRequest\x1a\x1f.api.user.v1.LoginWithCodeReply\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/login/codeB\x1cZ\x1auser-center/api/user/v1;v1b\x06proto3"
+	"\x0eSendVerifyCode\x12\".api.user.v1.SendVerifyCodeRequest\x1a .api.user.v1.SendVerifyCodeReply\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/verifycode/sendB\x1cZ\x1auser-center/api/user/v1;v1b\x06proto3"
 
 var (
 	file_api_user_v1_user_proto_rawDescOnce sync.Once
@@ -930,24 +701,20 @@ func file_api_user_v1_user_proto_rawDescGZIP() []byte {
 	return file_api_user_v1_user_proto_rawDescData
 }
 
-var file_api_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_api_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_api_user_v1_user_proto_goTypes = []any{
-	(*RegisterRequest)(nil),         // 0: api.user.v1.RegisterRequest
-	(*RegisterReply)(nil),           // 1: api.user.v1.RegisterReply
-	(*LoginRequest)(nil),            // 2: api.user.v1.LoginRequest
-	(*LoginReply)(nil),              // 3: api.user.v1.LoginReply
-	(*GetUserInfoRequest)(nil),      // 4: api.user.v1.GetUserInfoRequest
-	(*GetUserInfoReply)(nil),        // 5: api.user.v1.GetUserInfoReply
-	(*DeleteAccountRequest)(nil),    // 6: api.user.v1.DeleteAccountRequest
-	(*DeleteAccountReply)(nil),      // 7: api.user.v1.DeleteAccountReply
-	(*ChangePasswordRequest)(nil),   // 8: api.user.v1.ChangePasswordRequest
-	(*ChangePasswordReply)(nil),     // 9: api.user.v1.ChangePasswordReply
-	(*SendVerifyCodeRequest)(nil),   // 10: api.user.v1.SendVerifyCodeRequest
-	(*SendVerifyCodeReply)(nil),     // 11: api.user.v1.SendVerifyCodeReply
-	(*RegisterWithCodeRequest)(nil), // 12: api.user.v1.RegisterWithCodeRequest
-	(*RegisterWithCodeReply)(nil),   // 13: api.user.v1.RegisterWithCodeReply
-	(*LoginWithCodeRequest)(nil),    // 14: api.user.v1.LoginWithCodeRequest
-	(*LoginWithCodeReply)(nil),      // 15: api.user.v1.LoginWithCodeReply
+	(*RegisterRequest)(nil),       // 0: api.user.v1.RegisterRequest
+	(*RegisterReply)(nil),         // 1: api.user.v1.RegisterReply
+	(*LoginRequest)(nil),          // 2: api.user.v1.LoginRequest
+	(*LoginReply)(nil),            // 3: api.user.v1.LoginReply
+	(*GetUserInfoRequest)(nil),    // 4: api.user.v1.GetUserInfoRequest
+	(*GetUserInfoReply)(nil),      // 5: api.user.v1.GetUserInfoReply
+	(*DeleteAccountRequest)(nil),  // 6: api.user.v1.DeleteAccountRequest
+	(*DeleteAccountReply)(nil),    // 7: api.user.v1.DeleteAccountReply
+	(*ChangePasswordRequest)(nil), // 8: api.user.v1.ChangePasswordRequest
+	(*ChangePasswordReply)(nil),   // 9: api.user.v1.ChangePasswordReply
+	(*SendVerifyCodeRequest)(nil), // 10: api.user.v1.SendVerifyCodeRequest
+	(*SendVerifyCodeReply)(nil),   // 11: api.user.v1.SendVerifyCodeReply
 }
 var file_api_user_v1_user_proto_depIdxs = []int32{
 	0,  // 0: api.user.v1.User.Register:input_type -> api.user.v1.RegisterRequest
@@ -956,18 +723,14 @@ var file_api_user_v1_user_proto_depIdxs = []int32{
 	6,  // 3: api.user.v1.User.DeleteAccount:input_type -> api.user.v1.DeleteAccountRequest
 	8,  // 4: api.user.v1.User.ChangePassword:input_type -> api.user.v1.ChangePasswordRequest
 	10, // 5: api.user.v1.User.SendVerifyCode:input_type -> api.user.v1.SendVerifyCodeRequest
-	12, // 6: api.user.v1.User.RegisterWithCode:input_type -> api.user.v1.RegisterWithCodeRequest
-	14, // 7: api.user.v1.User.LoginWithCode:input_type -> api.user.v1.LoginWithCodeRequest
-	1,  // 8: api.user.v1.User.Register:output_type -> api.user.v1.RegisterReply
-	3,  // 9: api.user.v1.User.Login:output_type -> api.user.v1.LoginReply
-	5,  // 10: api.user.v1.User.GetUserInfo:output_type -> api.user.v1.GetUserInfoReply
-	7,  // 11: api.user.v1.User.DeleteAccount:output_type -> api.user.v1.DeleteAccountReply
-	9,  // 12: api.user.v1.User.ChangePassword:output_type -> api.user.v1.ChangePasswordReply
-	11, // 13: api.user.v1.User.SendVerifyCode:output_type -> api.user.v1.SendVerifyCodeReply
-	13, // 14: api.user.v1.User.RegisterWithCode:output_type -> api.user.v1.RegisterWithCodeReply
-	15, // 15: api.user.v1.User.LoginWithCode:output_type -> api.user.v1.LoginWithCodeReply
-	8,  // [8:16] is the sub-list for method output_type
-	0,  // [0:8] is the sub-list for method input_type
+	1,  // 6: api.user.v1.User.Register:output_type -> api.user.v1.RegisterReply
+	3,  // 7: api.user.v1.User.Login:output_type -> api.user.v1.LoginReply
+	5,  // 8: api.user.v1.User.GetUserInfo:output_type -> api.user.v1.GetUserInfoReply
+	7,  // 9: api.user.v1.User.DeleteAccount:output_type -> api.user.v1.DeleteAccountReply
+	9,  // 10: api.user.v1.User.ChangePassword:output_type -> api.user.v1.ChangePasswordReply
+	11, // 11: api.user.v1.User.SendVerifyCode:output_type -> api.user.v1.SendVerifyCodeReply
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -978,13 +741,15 @@ func file_api_user_v1_user_proto_init() {
 	if File_api_user_v1_user_proto != nil {
 		return
 	}
+	file_api_user_v1_user_proto_msgTypes[0].OneofWrappers = []any{}
+	file_api_user_v1_user_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_user_v1_user_proto_rawDesc), len(file_api_user_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

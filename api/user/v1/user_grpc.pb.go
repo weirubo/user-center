@@ -19,14 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_Register_FullMethodName         = "/api.user.v1.User/Register"
-	User_Login_FullMethodName            = "/api.user.v1.User/Login"
-	User_GetUserInfo_FullMethodName      = "/api.user.v1.User/GetUserInfo"
-	User_DeleteAccount_FullMethodName    = "/api.user.v1.User/DeleteAccount"
-	User_ChangePassword_FullMethodName   = "/api.user.v1.User/ChangePassword"
-	User_SendVerifyCode_FullMethodName   = "/api.user.v1.User/SendVerifyCode"
-	User_RegisterWithCode_FullMethodName = "/api.user.v1.User/RegisterWithCode"
-	User_LoginWithCode_FullMethodName    = "/api.user.v1.User/LoginWithCode"
+	User_Register_FullMethodName       = "/api.user.v1.User/Register"
+	User_Login_FullMethodName          = "/api.user.v1.User/Login"
+	User_GetUserInfo_FullMethodName    = "/api.user.v1.User/GetUserInfo"
+	User_DeleteAccount_FullMethodName  = "/api.user.v1.User/DeleteAccount"
+	User_ChangePassword_FullMethodName = "/api.user.v1.User/ChangePassword"
+	User_SendVerifyCode_FullMethodName = "/api.user.v1.User/SendVerifyCode"
 )
 
 // UserClient is the client API for User service.
@@ -39,8 +37,6 @@ type UserClient interface {
 	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountReply, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordReply, error)
 	SendVerifyCode(ctx context.Context, in *SendVerifyCodeRequest, opts ...grpc.CallOption) (*SendVerifyCodeReply, error)
-	RegisterWithCode(ctx context.Context, in *RegisterWithCodeRequest, opts ...grpc.CallOption) (*RegisterWithCodeReply, error)
-	LoginWithCode(ctx context.Context, in *LoginWithCodeRequest, opts ...grpc.CallOption) (*LoginWithCodeReply, error)
 }
 
 type userClient struct {
@@ -111,26 +107,6 @@ func (c *userClient) SendVerifyCode(ctx context.Context, in *SendVerifyCodeReque
 	return out, nil
 }
 
-func (c *userClient) RegisterWithCode(ctx context.Context, in *RegisterWithCodeRequest, opts ...grpc.CallOption) (*RegisterWithCodeReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RegisterWithCodeReply)
-	err := c.cc.Invoke(ctx, User_RegisterWithCode_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) LoginWithCode(ctx context.Context, in *LoginWithCodeRequest, opts ...grpc.CallOption) (*LoginWithCodeReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoginWithCodeReply)
-	err := c.cc.Invoke(ctx, User_LoginWithCode_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
@@ -141,8 +117,6 @@ type UserServer interface {
 	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountReply, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordReply, error)
 	SendVerifyCode(context.Context, *SendVerifyCodeRequest) (*SendVerifyCodeReply, error)
-	RegisterWithCode(context.Context, *RegisterWithCodeRequest) (*RegisterWithCodeReply, error)
-	LoginWithCode(context.Context, *LoginWithCodeRequest) (*LoginWithCodeReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -170,12 +144,6 @@ func (UnimplementedUserServer) ChangePassword(context.Context, *ChangePasswordRe
 }
 func (UnimplementedUserServer) SendVerifyCode(context.Context, *SendVerifyCodeRequest) (*SendVerifyCodeReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method SendVerifyCode not implemented")
-}
-func (UnimplementedUserServer) RegisterWithCode(context.Context, *RegisterWithCodeRequest) (*RegisterWithCodeReply, error) {
-	return nil, status.Error(codes.Unimplemented, "method RegisterWithCode not implemented")
-}
-func (UnimplementedUserServer) LoginWithCode(context.Context, *LoginWithCodeRequest) (*LoginWithCodeReply, error) {
-	return nil, status.Error(codes.Unimplemented, "method LoginWithCode not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -306,42 +274,6 @@ func _User_SendVerifyCode_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_RegisterWithCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterWithCodeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).RegisterWithCode(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_RegisterWithCode_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).RegisterWithCode(ctx, req.(*RegisterWithCodeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_LoginWithCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginWithCodeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).LoginWithCode(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_LoginWithCode_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).LoginWithCode(ctx, req.(*LoginWithCodeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -372,14 +304,6 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendVerifyCode",
 			Handler:    _User_SendVerifyCode_Handler,
-		},
-		{
-			MethodName: "RegisterWithCode",
-			Handler:    _User_RegisterWithCode_Handler,
-		},
-		{
-			MethodName: "LoginWithCode",
-			Handler:    _User_LoginWithCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -50,13 +50,14 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Phone    string `json:"phone"`
 		Password string `json:"password"`
 		Nickname string `json:"nickname"`
+		Code     string `json:"code"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	user, err := h.authUC.Register(r.Context(), req.Email, req.Phone, req.Password, req.Nickname)
+	user, err := h.authUC.Register(r.Context(), req.Email, req.Phone, req.Password, req.Nickname, req.Code)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -72,13 +73,14 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		Code     string `json:"code"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	token, user, err := h.authUC.Login(r.Context(), req.Email, req.Password)
+	token, user, err := h.authUC.Login(r.Context(), req.Email, req.Password, req.Code)
 	if err != nil {
 		http.Error(w, err.Error(), 401)
 		return
@@ -174,52 +176,5 @@ func (h *UserHandler) SendVerifyCode(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"message": "verification code sent",
-	})
-}
-
-func (h *UserHandler) RegisterWithCode(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Code     string `json:"code"`
-		Nickname string `json:"nickname"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	user, err := h.authUC.RegisterWithCode(r.Context(), req.Email, req.Password, req.Code, req.Nickname)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"id":      user.ID,
-		"message": "register success",
-	})
-}
-
-func (h *UserHandler) LoginWithCode(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		Email string `json:"email"`
-		Code  string `json:"code"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	token, user, err := h.authUC.LoginWithCode(r.Context(), req.Email, req.Code)
-	if err != nil {
-		http.Error(w, err.Error(), 401)
-		return
-	}
-
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"token":    token,
-		"id":       user.ID,
-		"nickname": user.Nickname,
 	})
 }

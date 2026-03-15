@@ -42,18 +42,6 @@ service User {
       body: "*"
     };
   }
-  rpc RegisterWithCode (RegisterWithCodeRequest) returns (RegisterWithCodeReply) {
-    option (google.api.http) = {
-      post: "/api/v1/register/code"
-      body: "*"
-    };
-  }
-  rpc LoginWithCode (LoginWithCodeRequest) returns (LoginWithCodeReply) {
-    option (google.api.http) = {
-      post: "/api/v1/login/code"
-      body: "*"
-    };
-  }
 }
 
 message RegisterRequest {
@@ -61,6 +49,7 @@ message RegisterRequest {
   string phone = 2;
   string password = 3;
   string nickname = 4;
+  optional string code = 5;
 }
 
 message RegisterReply {
@@ -71,6 +60,7 @@ message RegisterReply {
 message LoginRequest {
   string email = 1;
   string password = 2;
+  optional string code = 3;
 }
 
 message LoginReply {
@@ -109,27 +99,4 @@ message SendVerifyCodeRequest {
 
 message SendVerifyCodeReply {
   string message = 1;
-}
-
-message RegisterWithCodeRequest {
-  string email = 1;
-  string password = 2;
-  string code = 3;
-  string nickname = 4;
-}
-
-message RegisterWithCodeReply {
-  int64 id = 1;
-  string message = 2;
-}
-
-message LoginWithCodeRequest {
-  string email = 1;
-  string code = 2;
-}
-
-message LoginWithCodeReply {
-  string token = 1;
-  int64 id = 2;
-  string nickname = 3;
 }
