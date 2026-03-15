@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"user-center/internal/conf"
@@ -19,21 +18,16 @@ func NewDB(cfg *conf.Database) (*DB, error) {
 	var db *gorm.DB
 	var err error
 
-	if cfg != nil && cfg.Source != "" {
-		// Use MySQL
-		db, err = gorm.Open(mysql.Open(cfg.Source), &gorm.Config{})
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect MySQL: %v", err)
-		}
-		fmt.Println("Using MySQL database:", cfg.Source)
-	} else {
-		// Use SQLite
-		db, err = gorm.Open(sqlite.Open("user-center.db"), &gorm.Config{})
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect SQLite: %v", err)
-		}
-		fmt.Println("Using SQLite database")
+	// Use MySQL only
+	if cfg == nil || cfg.Source == "" {
+		return nil, fmt.Errorf("database config is required")
 	}
+	
+	db, err = gorm.Open(mysql.Open(cfg.Source), &gorm.Config{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect MySQL: %v", err)
+	}
+	fmt.Println("Using MySQL database:", cfg.Source)
 
 	// Auto migrate
 	if err := db.AutoMigrate(&entity.User{}); err != nil {
