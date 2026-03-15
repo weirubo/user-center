@@ -8,11 +8,14 @@ import (
 	"user-center/internal/data"
 	"user-center/internal/server"
 	"user-center/internal/service"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/go-kratos/kratos/v2/transport/http"
 )
 
-func NewApp(conf *conf.Config, logger log.Logger) (*App, func(), error) {
+func NewApp(*conf.Config, log.Logger) (*App, func(), error) {
 	panic(wire.Build(
-		conf.NewConfig,
 		data.NewDB,
 		data.NewCache,
 		data.NewData,
